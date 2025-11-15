@@ -18,11 +18,11 @@ import PendingOrdersTable from "@/components/trades/PendingOrders/PendingOrderCa
 import WatchlistCard from "@/components/watchlist/WatchlistCard";
 import DetailPanel from "@/components/watchlist/DetailPanel";
 //
-import { watchlistItems } from "@/data/watchlist.mock";
-import { activeTrades } from "@/data/activeTrades.mock";
-import { recentOrders } from "@/data/recentOrders.mock";
-import { completedTrades } from "@/data/completedTrades.mock";
-import { pendingOrders } from "@/data/pendingOrders.mock";
+import { watchlistItems } from "@/data/dummy/watchlist.mock";
+import { activeTrades } from "@/data/dummy/activeTrades.mock";
+import { recentOrders } from "@/data/dummy/recentOrders.mock";
+import { completedTrades } from "@/data/dummy/completedTrades.mock";
+import { pendingOrders } from "@/data/dummy/pendingOrders.mock";
 //
 
 export default function MainContent() {

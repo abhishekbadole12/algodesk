@@ -1,6 +1,16 @@
+interface TabButtonProps {
+  label: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  isActive: boolean;
+  onClick: () => void;
+}
 
-
-export default function TabButton({ label, icon: Icon, isActive, onClick }) {
+export default function TabButton({
+  label,
+  icon: Icon,
+  isActive,
+  onClick,
+}: TabButtonProps) {
   return (
     <button
       onClick={onClick}

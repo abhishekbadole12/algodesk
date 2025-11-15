@@ -1,38 +1,98 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { X, Lock, Mail } from 'lucide-react'
+import { FormEvent, useState } from "react";
+import { X, Lock, Mail } from "lucide-react";
+//
+import { AUTH_STEPS, AuthStep } from "@/constant/authSteps";
 
-export function AuthModal({ isOpen, onClose, onAuthSuccess }) {
-  const [step, setStep] = useState('login') // 'login' | 'otp'
-  const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState('')
-  const [loading, setLoading] = useState(false)
+type LoginFormValues = {
+  clientCode: string;
+  password: string;
+};
+interface AuthModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAuthSuccess: () => void;
+}
 
-  const handleLoginSubmit = (e) => {
-    e.preventDefault()
-    setLoading(true)
+interface ApiResponse {
+  status: boolean;
+  message: string;
+  data?: any;
+}
+
+export function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
+  const [step, setStep] = useState<AuthStep>(AUTH_STEPS.LOGIN);
+  const [formData, setFormData] = useState<LoginFormValues>({
+    clientCode: "",
+    password: "",
+  }); // 1st Form state
+  const [otp, setOtp] = useState(""); // 2nd Form State
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // Handle Login Submit
+  const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
     // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      setStep('otp')
-    }, 1000)
-  }
+    try {
+      const res = await fetch("/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
 
-  const handleOtpSubmit = (e) => {
-    e.preventDefault()
-    setLoading(true)
+      const data: ApiResponse = await res.json();
+
+      if (data.status) {
+        sessionStorage.setItem("refreshToken", data.data.refreshToken);
+        setLoading(false);
+        return;
+      }
+
+      setStep(AUTH_STEPS.OTP);
+      setMessage(data.message);
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle OTP Submit
+  const handleOtpSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+
     // Simulate API call
-    setTimeout(() => {
-      setLoading(false)
-      onAuthSuccess()
-      setStep('login')
-      setEmail('')
-      setOtp('')
-    }, 1000)
-  }
+    try {
+      const res = await fetch("/api/user/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          otp,
+          refreshToken: sessionStorage.getItem("refreshToken"),
+        }),
+      });
+      const data: ApiResponse = await res.json();
 
-  if (!isOpen) return null
+      if (!data.status) {
+        setMessage(data.message || "OTP verification failed");
+        setLoading(false);
+        return;
+      }
+
+      onAuthSuccess();
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -46,25 +106,60 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }) {
           <X className="w-5 h-5" />
         </button>
 
-        {step === 'login' ? (
+        {step === AUTH_STEPS.LOGIN && (
           <>
             {/* Login Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Welcome Back</h1>
-              <p className="text-muted-foreground text-sm">Sign in to your AlgoDesk account</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Welcome Back
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                Sign in to your AlgoDesk account
+              </p>
             </div>
 
             {/* Login Form */}
             <form onSubmit={handleLoginSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Email Address</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">
+                  Mobile Number / Client Code
+                </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
+                    type="number"
+                    name="clientCode"
+                    value={formData.clientCode}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                    placeholder="9177XXXX08"
+                    className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-foreground mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                    placeholder="XXXXXX"
                     className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all"
                     required
                   />
@@ -76,35 +171,44 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }) {
                 disabled={loading}
                 className="w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-disabled"
               >
-                {loading ? 'Sending OTP...' : 'Continue'}
+                {loading ? "Sending OTP..." : "Continue"}
               </button>
             </form>
 
             {/* Footer */}
             <p className="text-center text-xs text-muted-foreground mt-6">
-              By signing in, you agree to our Terms of Service and Privacy Policy
+              By signing in, you agree to our Terms of Service and Privacy
+              Policy
             </p>
           </>
-        ) : (
+        )}
+
+        {step === AUTH_STEPS.OTP && (
           <>
             {/* OTP Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-foreground mb-2">Verify OTP</h1>
-              <p className="text-muted-foreground text-sm">We've sent a code to {email}</p>
+              <h1 className="text-3xl font-bold text-foreground mb-2">
+                Verify OTP
+              </h1>
+              <p className="text-muted-foreground text-sm">{message}</p>
             </div>
 
             {/* OTP Form */}
             <form onSubmit={handleOtpSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">OTP Code</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">
+                  OTP Code
+                </label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                   <input
                     type="text"
                     value={otp}
-                    onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    onChange={(e) =>
+                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                    }
                     placeholder="000000"
-                    maxLength="6"
+                    maxLength={6}
                     className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-center text-2xl tracking-widest font-mono"
                     required
                   />
@@ -113,15 +217,15 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
               <button
                 type="submit"
-                disabled={loading || otp.length !== 6}
+                // disabled={loading || otp.length < 3}
                 className="w-full bg-primary text-white font-semibold py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
-                {loading ? 'Verifying...' : 'Verify OTP'}
+                {loading ? "Verifying..." : "Verify OTP"}
               </button>
 
               <button
                 type="button"
-                onClick={() => setStep('login')}
+                onClick={() => setStep(AUTH_STEPS.LOGIN)}
                 className="w-full text-primary font-semibold py-2 rounded-lg hover:bg-primary/10 transition-colors"
               >
                 Back to Login
@@ -130,11 +234,14 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }) {
 
             {/* Resend OTP */}
             <p className="text-center text-xs text-muted-foreground mt-6">
-              Didn't receive the code? <button className="text-primary hover:underline font-semibold">Resend</button>
+              Didn't receive the code?{" "}
+              <button className="text-primary hover:underline font-semibold">
+                Resend
+              </button>
             </p>
           </>
         )}
       </div>
     </div>
-  )
+  );
 }

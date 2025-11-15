@@ -1,8 +1,16 @@
 import { AlertCircle, CheckCircle, ChevronDown } from "lucide-react";
 
-interface Props{}
+interface TradeRowProps {
+  trade: any; // *
+  isExpanded: boolean;
+  onToggleExpand: () => void;
+}
 
-export default function TradeRow({ trade, isExpanded, onToggleExpand }: Props) {
+export default function TradeRow({
+  trade,
+  isExpanded,
+  onToggleExpand,
+}: TradeRowProps) {
   const isProfitable = trade.pnl >= 0;
 
   return (

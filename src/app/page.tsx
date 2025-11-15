@@ -9,8 +9,8 @@ import { AuthModal } from "@/components/auth-modal";
 import MainContent from "@/app/dashboard/main-content/index";
 
 export default function Home() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(isAuthenticated);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [showAuthModal, setShowAuthModal] = useState<boolean>(isAuthenticated);
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
