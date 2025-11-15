@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, Settings, Search, X } from 'lucide-react'
+import { Settings, Search, X } from 'lucide-react'
 
 // Mock script data for search dropdown
 const scriptsDatabase = [
