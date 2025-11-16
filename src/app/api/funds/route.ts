@@ -1,38 +1,50 @@
-// app/api/funds/route.ts
-
 import { NextResponse } from "next/server";
+import { getSession } from "@/lib/session/session";
 
-const API_KEY = process.env.MSTOCK_API_KEY_TYPE_A;
-const JWT_TOKEN = process.env.MSTOCK_JWT_TOKEN;
+interface FundSummaryResponse {
+  status: string | boolean;
+  message?: string;
+  errorcode?: string;
+  data?: any;
+}
 
 export async function GET() {
   try {
-    const response = await fetch(
-      "https://api.mstock.trade/openapi/typeb/user/fundsummary",
+    const session = await getSession();
+    
+    if (!session?.token) {
+      return NextResponse.json(
+        { status: false, message: "Not authenticated" },
+        { status: 401 }
+      );
+    }
+
+    const res = await fetch(
+      `${process.env.MSTOCK_API_BASE_URL}/${process.env.MSTOCK_API_TYPE}/user/fundsummary`,
       {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${JWT_TOKEN}`,
-          "X-PrivateKey": API_KEY || "",
-          "X-Mirae-Version": "1",
+          "X-Mirae-Version": process.env.MSTOCK_API_VERSION!,
+          Authorization: `Bearer ${session.token}`,
+          "X-PrivateKey": process.env.MSTOCK_API_KEY_TYPE_A!,
         },
       }
     );
 
-    if (!response.ok) {
-      return NextResponse.json(
-        { error: "Failed to fetch mStock funds" },
-        { status: 500 }
-      );
+     const data = await res.json();
+
+    if (!data.status) {
+      return NextResponse.json(data);
     }
 
-    const data = await response.json();
     return NextResponse.json(data);
-  } catch (error) {
-    console.error("Funds API Error:", error);
+  } catch (err: any) {
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      {
+        status: false,
+        message: err?.response?.data || "Funds fetch failed",
+      },
       { status: 500 }
     );
   }
