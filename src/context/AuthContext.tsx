@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 import type { User } from "@/types/user";
+import { useInstruments } from "@/hooks/useInstruments";
 
 interface LoginFormValues {
   clientCode: string;
@@ -36,8 +37,11 @@ export function AuthProvider({
   children: React.ReactNode;
   initialSession: any;
 }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(!!initialSession?.user);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!initialSession?.user
+  );
   const [user, setUser] = useState<User | null>(initialSession?.user || null);
+  const { data, loading } = useInstruments();
 
   // -----------------------------
   // LOGIN (STEP 1)
