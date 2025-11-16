@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Clock,
   CheckCircle,
@@ -24,11 +25,19 @@ import { recentOrders } from "@/data/dummy/recentOrders.mock";
 import { completedTrades } from "@/data/dummy/completedTrades.mock";
 import { pendingOrders } from "@/data/dummy/pendingOrders.mock";
 //
+import { Tabs } from "@/enum/tabs.enum";
+import { TAB_META } from "@/enum/tabs.meta";
+//
 
-export default function MainContent() {
+interface IMainContent {
+  activeTab: Tabs;
+}
+
+export default function MainContent({ activeTab }: IMainContent) {
+  const router = useRouter();
+
   const [selectedItem, setSelectedItem] = useState(watchlistItems[0]);
   const [expandedTrades, setExpandedTrades] = useState({});
-  const [activeTab, setActiveTab] = useState("active");
 
   const handleToggleExpand = (tradeId) => {
     setExpandedTrades((prev) => ({
@@ -37,38 +46,33 @@ export default function MainContent() {
     }));
   };
 
+  // Handle tab click + update URL
+  const handleTabChange = (tab: Tabs) => {
+    router.push(`/?tab=${tab}`, { scroll: false });
+  };
+
   return (
     <main className="flex-1 overflow-y-auto bg-background p-6 space-y-6">
       {/* Tab Navigation System */}
       <div className="flex gap-2 border-b border-border pb-4">
-        <TabButton
-          label="Active Trades"
-          icon={Play}
-          isActive={activeTab === "active"}
-          onClick={() => setActiveTab("active")}
-        />
-        <TabButton
-          label="Completed Trades"
-          icon={CheckCircle}
-          isActive={activeTab === "completed"}
-          onClick={() => setActiveTab("completed")}
-        />
-        <TabButton
-          label="Pending Orders"
-          icon={ListTodo}
-          isActive={activeTab === "pending"}
-          onClick={() => setActiveTab("pending")}
-        />
-        <TabButton
-          label="Watchlist"
-          icon={Eye}
-          isActive={activeTab === "watchlist"}
-          onClick={() => setActiveTab("watchlist")}
-        />
+        {Object.values(Tabs).map((tab) => {
+          const meta = TAB_META[tab];
+          const Icon = meta.icon;
+
+          return (
+            <TabButton
+              key={tab}
+              label={meta.label}
+              icon={Icon}
+              isActive={activeTab === tab}
+              onClick={() => handleTabChange(tab)}
+            />
+          );
+        })}
       </div>
 
       {/* Conditional Rendering Based on Active Tab */}
-      {activeTab === "active" && (
+      {activeTab === Tabs.ACTIVE && (
         <>
           {/* Active Trades Table */}
           <div className="bg-card border border-border rounded-lg overflow-hidden">
@@ -217,13 +221,15 @@ export default function MainContent() {
         </>
       )}
 
-      {activeTab === "completed" && (
+      {activeTab === Tabs.COMPLETED && (
         <CompletedTradesTable trades={completedTrades} />
       )}
 
-      {activeTab === "pending" && <PendingOrdersTable orders={pendingOrders} />}
+      {activeTab === Tabs.PENDING && (
+        <PendingOrdersTable orders={pendingOrders} />
+      )}
 
-      {activeTab === "watchlist" && (
+      {activeTab === Tabs.WATCHLIST && (
         <div className="grid grid-cols-3 gap-4">
           <div className="col-span-2">
             <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">

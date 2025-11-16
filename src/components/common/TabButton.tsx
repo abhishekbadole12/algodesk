@@ -14,7 +14,7 @@ export default function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+      className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold text-sm transition-all cursor-pointer ${
         isActive
           ? "bg-primary text-white"
           : "bg-background text-muted-foreground hover:text-foreground hover:bg-background/80"

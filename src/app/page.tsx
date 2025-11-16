@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 //
 import { useAuth } from "@/context/AuthContext";
 //
@@ -14,6 +15,8 @@ import { useInstruments } from "@/hooks/useInstruments";
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth();
+  const params = useSearchParams();
+
   // const { data, loading } = useInstruments();
 
   // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -23,13 +26,14 @@ export default function Home() {
   //   setIsAuthenticated(true);
   //   setShowAuthModal(false);
   // };
+  console.log(params);
 
   return (
     <div className="flex h-screen bg-background">
       <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header isAuthenticated={isAuthenticated} user={user} />
-        <MainContent />
+        <MainContent activeTab={params.get("tab") || "active"}/>
       </div>
 
       {/* Authentication Modal */}
