@@ -30,7 +30,7 @@ import { TAB_META } from "@/enum/tabs.meta";
 //
 
 interface IMainContent {
-  activeTab: Tabs;
+  activeTab: Tabs | string;
 }
 
 export default function MainContent({ activeTab }: IMainContent) {

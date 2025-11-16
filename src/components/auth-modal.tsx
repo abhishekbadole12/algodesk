@@ -16,7 +16,7 @@ interface AuthModalProps {
   isOpen: boolean;
 }
 
-export function AuthModal({ isOpen }: AuthModalProps) {
+export default function AuthModal({ isOpen }: AuthModalProps) {
   const { login, verifyOtp, logout } = useAuth();
 
   const [step, setStep] = useState<AuthStep>(AUTH_STEPS.LOGIN);

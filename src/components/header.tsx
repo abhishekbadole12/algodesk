@@ -7,7 +7,7 @@ interface HeaderProps {
   user?: User | null;
 }
 
-export function Header({ isAuthenticated, user }: HeaderProps) {
+export default function Header({ isAuthenticated, user }: HeaderProps) {
   const date = new Date();
   const formattedDate = date.toLocaleDateString("en-US", {
     year: "numeric",
