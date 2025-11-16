@@ -8,7 +8,7 @@ export async function POST(req: Request) {
     const payload = { otp, refreshToken };
 
     const res = await fetch(
-      `https://api.mstock.trade/openapi/typeb/session/token`,
+      `${process.env.MSTOCK_API_BASE_URL}/${process.env.MSTOCK_API_TYPE}/session/token`,
       {
         method: "POST",
         headers: {
@@ -33,8 +33,8 @@ export async function POST(req: Request) {
       exchanges: data.data.exchanges,
     });
 
-    return NextResponse.json({ status: true });
-  } catch (error) {
+    return NextResponse.json({status: data.status, message: data.message});
+  } catch (error: any) {
     return NextResponse.json({ status: false, error: error.message });
   }
 }

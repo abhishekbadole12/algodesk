@@ -3,7 +3,10 @@
 import { FormEvent, useState } from "react";
 import { X, Lock, Mail } from "lucide-react";
 //
+import { useAuth } from "@/context/AuthContext";
+//
 import { AUTH_STEPS, AuthStep } from "@/constant/authSteps";
+//
 
 type LoginFormValues = {
   clientCode: string;
@@ -11,17 +14,11 @@ type LoginFormValues = {
 };
 interface AuthModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onAuthSuccess: () => void;
 }
 
-interface ApiResponse {
-  status: boolean;
-  message: string;
-  data?: any;
-}
+export function AuthModal({ isOpen }: AuthModalProps) {
+  const { login, verifyOtp, logout } = useAuth();
 
-export function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
   const [step, setStep] = useState<AuthStep>(AUTH_STEPS.LOGIN);
   const [formData, setFormData] = useState<LoginFormValues>({
     clientCode: "",
@@ -31,65 +28,45 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Handle Login Submit
+  // -----------------------------
+  // LOGIN HANDLER - using AuthContext
+  // -----------------------------
   const handleLoginSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
-    try {
-      const res = await fetch("/api/user/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+    const { status, message } = await login(formData);
 
-      const data: ApiResponse = await res.json();
-
-      if (data.status) {
-        sessionStorage.setItem("refreshToken", data.data.refreshToken);
-        setLoading(false);
-        return;
-      }
-
-      setStep(AUTH_STEPS.OTP);
-      setMessage(data.message);
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
+    if (!status) {
       setLoading(false);
+      console.log(message);
+      return;
     }
+
+    // Login success → move to OTP step
+    setMessage(message);
+    setStep(AUTH_STEPS.OTP);
+    setLoading(false);
   };
 
-  // Handle OTP Submit
+  // -----------------------------
+  // OTP HANDLER - using AuthContext
+  // -----------------------------
   const handleOtpSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulate API call
-    try {
-      const res = await fetch("/api/user/verify-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          otp,
-          refreshToken: sessionStorage.getItem("refreshToken"),
-        }),
-      });
-      const data: ApiResponse = await res.json();
+    const { status, message } = await verifyOtp(otp);
 
-      if (!data.status) {
-        setMessage(data.message || "OTP verification failed");
-        setLoading(false);
-        return;
-      }
-
-      onAuthSuccess();
-    } catch (error: any) {
-      alert(error.message);
-    } finally {
+    if (!status) {
       setLoading(false);
+      console.log(message);
+      return;
     }
+
+    // OTP success → Authenticated successfully
+    setMessage("");
+    setLoading(false);
   };
 
   if (!isOpen) return null;
@@ -99,13 +76,14 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
       {/* Modal Container */}
       <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md p-8 relative">
         {/* Close Button */}
-        <button
+        {/* <button
           onClick={onClose}
           className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors"
         >
           <X className="w-5 h-5" />
-        </button>
+        </button> */}
 
+        {/* -------------------- LOGIN STEP -------------------- */}
         {step === AUTH_STEPS.LOGIN && (
           <>
             {/* Login Header */}
@@ -183,6 +161,7 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
           </>
         )}
 
+        {/* -------------------- OTP STEP -------------------- */}
         {step === AUTH_STEPS.OTP && (
           <>
             {/* OTP Header */}
@@ -200,7 +179,7 @@ export function AuthModal({ isOpen, onClose, onAuthSuccess }: AuthModalProps) {
                   OTP Code
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-4 w-4 h-4 text-muted-foreground" />
                   <input
                     type="text"
                     value={otp}

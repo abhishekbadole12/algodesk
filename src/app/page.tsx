@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 //
+import { useAuth } from "@/context/AuthContext";
+//
 import { Header } from "@/components/header";
 import { Sidebar } from "@/components/sidebar";
 import { AuthModal } from "@/components/auth-modal";
@@ -9,13 +11,16 @@ import { AuthModal } from "@/components/auth-modal";
 import MainContent from "@/app/dashboard/main-content/index";
 
 export default function Home() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [showAuthModal, setShowAuthModal] = useState<boolean>(isAuthenticated);
+  const { isAuthenticated } = useAuth();
 
-  const handleAuthSuccess = () => {
-    setIsAuthenticated(true);
-    setShowAuthModal(false);
-  };
+  // const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  // const [showAuthModal, setShowAuthModal] = useState<boolean>(isAuthenticated);
+
+  // const handleAuthSuccess = () => {
+  //   setIsAuthenticated(true);
+  //   setShowAuthModal(false);
+  // };
+
 
   return (
     <div className="flex h-screen bg-background">
@@ -27,9 +32,9 @@ export default function Home() {
 
       {/* Authentication Modal */}
       <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => setShowAuthModal(true)}
-        onAuthSuccess={handleAuthSuccess}
+        isOpen={!isAuthenticated}
+        // onClose={() => setShowAuthModal(true)}
+        // onAuthSuccess={handleAuthSuccess}
       />
     </div>
   );
