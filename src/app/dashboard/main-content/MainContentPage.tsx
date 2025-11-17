@@ -18,6 +18,8 @@ import CompletedTradesTable from "@/components/trades/CompletedTrades/CompletedT
 import PendingOrdersTable from "@/components/trades/PendingOrders/PendingOrderCard";
 import WatchlistCard from "@/components/watchlist/WatchlistCard";
 import DetailPanel from "@/components/watchlist/DetailPanel";
+import TableHead from "@/components/main-content/table-head";
+import TableHeader from "@/components/main-content/table-header";
 //
 import { watchlistItems } from "@/data/dummy/watchlist.mock";
 import { activeTrades } from "@/data/dummy/activeTrades.mock";
@@ -28,6 +30,8 @@ import { pendingOrders } from "@/data/dummy/pendingOrders.mock";
 import { Tabs } from "@/types/enum/tabs.enum";
 import { TAB_META } from "@/types/enum/tabs.meta";
 //
+import { ACTIVE_TRADES_COLUMNS, RECENT_ORDERS_COLUMNS } from "@/constant/table";
+//
 
 interface IMainContent {
   activeTab: Tabs | string;
@@ -37,9 +41,11 @@ export default function MainContent({ activeTab }: IMainContent) {
   const router = useRouter();
 
   const [selectedItem, setSelectedItem] = useState(watchlistItems[0]);
-  const [expandedTrades, setExpandedTrades] = useState({});
+  const [expandedTrades, setExpandedTrades] = useState<Record<string, boolean>>(
+    {}
+  );
 
-  const handleToggleExpand = (tradeId) => {
+  const handleToggleExpand = (tradeId: string) => {
     setExpandedTrades((prev) => ({
       ...prev,
       [tradeId]: !prev[tradeId],
@@ -53,7 +59,7 @@ export default function MainContent({ activeTab }: IMainContent) {
 
   return (
     <main className="flex-1 overflow-y-auto bg-background p-6 space-y-6">
-      {/* Tab Navigation System */}
+      {/* ---------------- TAB NAVIGATION ---------------- */}
       <div className="flex gap-2 border-b border-border pb-4">
         {Object.values(Tabs).map((tab) => {
           const meta = TAB_META[tab];
@@ -71,54 +77,24 @@ export default function MainContent({ activeTab }: IMainContent) {
         })}
       </div>
 
-      {/* Conditional Rendering Based on Active Tab */}
+      {/* ---------------- ACTIVE TRADES ---------------- */}
       {activeTab === Tabs.ACTIVE && (
         <>
           {/* Active Trades Table */}
           <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-border">
-              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Play className="w-5 h-5 text-primary" />
-                Active Trades
-              </h2>
-            </div>
+            <TableHeader title="Active Trades" Icon={Play} />
 
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-background/50">
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold"></th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Symbol
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Side
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Order Type
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Entry Price
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Qty
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      P&L
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Status
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Time
-                    </th>
-                  </tr>
-                </thead>
+                <TableHead columns={ACTIVE_TRADES_COLUMNS} />
+
                 <tbody>
                   {activeTrades.map((trade) => (
                     <TradeRow
                       key={trade.id}
                       trade={trade}
+                      columns={ACTIVE_TRADES_COLUMNS}
+                      isExpandable
                       isExpanded={expandedTrades[trade.id]}
                       onToggleExpand={handleToggleExpand}
                     />
@@ -129,90 +105,21 @@ export default function MainContent({ activeTab }: IMainContent) {
           </div>
 
           {/* Recent Orders */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-                <Clock className="w-5 h-5 text-primary" />
-                Recent Orders
-              </h2>
-              <button className="text-sm text-primary hover:underline">
-                View all
-              </button>
-            </div>
+          <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <TableHeader title="Recent Orders" Icon={Clock} />
 
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Symbol
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Side
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Qty
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Price
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Status
-                    </th>
-                    <th className="text-left py-3 px-3 text-muted-foreground font-semibold">
-                      Time
-                    </th>
-                  </tr>
-                </thead>
+                <TableHead columns={RECENT_ORDERS_COLUMNS} />
+
                 <tbody>
                   {recentOrders.map((order) => (
-                    <tr
+                    <TradeRow
                       key={order.id}
-                      className="border-b border-border hover:bg-background transition-colors"
-                    >
-                      <td className="py-3 px-3 font-semibold text-foreground">
-                        {order.symbol}
-                      </td>
-                      <td className="py-3 px-3">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-semibold ${
-                            order.side === "BUY"
-                              ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                              : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                          }`}
-                        >
-                          {order.side}
-                        </span>
-                      </td>
-                      <td className="py-3 px-3 text-foreground">
-                        {order.quantity}
-                      </td>
-                      <td className="py-3 px-3 text-foreground">
-                        ₹{order.price.toFixed(2)}
-                      </td>
-                      <td className="py-3 px-3">
-                        <div className="flex items-center gap-2">
-                          {order.status === "executed" ? (
-                            <>
-                              <CheckCircle className="w-4 h-4 text-green-500" />
-                              <span className="text-green-600 dark:text-green-400 font-medium">
-                                Executed
-                              </span>
-                            </>
-                          ) : (
-                            <>
-                              <AlertCircle className="w-4 h-4 text-yellow-500" />
-                              <span className="text-yellow-600 dark:text-yellow-400 font-medium">
-                                Pending
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-3 text-muted-foreground">
-                        {order.time}
-                      </td>
-                    </tr>
+                      trade={order}
+                      columns={RECENT_ORDERS_COLUMNS}
+                      isExpandable={false}
+                    />
                   ))}
                 </tbody>
               </table>
@@ -236,6 +143,7 @@ export default function MainContent({ activeTab }: IMainContent) {
               <Heart className="w-5 h-5 text-primary" />
               My Watchlist
             </h2>
+
             <div className="grid grid-cols-2 gap-4">
               {watchlistItems.map((item) => (
                 <WatchlistCard
