@@ -10,7 +10,12 @@ import SidebarFooter from "./sidebar-footer";
 import FormInput from "../common/form/form-input";
 import FormSelect from "../common/form/form-select";
 //
-import { scriptsDatabase } from "@/data/dummy/instruments.mock";
+import { useInstrumentSearch } from "@/hooks/useInstrumentSearch";
+//
+import { formatOptionLabel } from "@/utils/formatTradingSymbol";
+import { AlgorithmCode } from "@/types/enum/algorithm.enum";
+import { ALGORITHM_PRESETS } from "@/types/config/algorithm-presets";
+import { ORDER_TYPE_OPTIONS } from "@/types/config/order-type";
 //
 
 export default function Sidebar() {
@@ -18,24 +23,26 @@ export default function Sidebar() {
   const [selectedScript, setSelectedScript] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [side, setSide] = useState("BUY");
-  const [quantity, setQuantity] = useState("50");
+  const [quantity, setQuantity] = useState<number>(0);
   const [orderType, setOrderType] = useState("Limit");
-  const [limitPrice, setLimitPrice] = useState("225.50");
-  const [algorithm, setAlgorithm] = useState("Target ₹1 / SL ₹1");
-  const [target, setTarget] = useState("230");
-  const [stopLoss, setStopLoss] = useState("220");
-
-  // Filter scripts based on search input
-  const filteredScripts = scriptsDatabase.filter(
-    (script) =>
-      script.symbol.toLowerCase().includes(searchInput.toLowerCase()) ||
-      script.name.toLowerCase().includes(searchInput.toLowerCase())
+  const [limitPrice, setLimitPrice] = useState<number>(0);
+  const [algorithm, setAlgorithm] = useState<AlgorithmCode>(
+    AlgorithmCode.TARGET_1_STOPLOSS_1
   );
+  const [target, setTarget] = useState<number>(0);
+  const [stopLoss, setStopLoss] = useState<number>(0); //
+  // const [query, setQuery] = useState("");
+  const results = useInstrumentSearch(searchInput);
 
   const handleScriptSelect = (script) => {
+    let name =
+      script.segment === "OPTSTK" || script.segment === "OPTIDX"
+        ? formatOptionLabel(script.tradingSymbol)
+        : script.tradingSymbol;
     setSelectedScript(script);
-    setSearchInput(script.symbol);
+    setSearchInput(name);
     setShowDropdown(false);
+    console.log(script);
   };
 
   const handleClearScript = () => {
@@ -83,18 +90,21 @@ export default function Sidebar() {
               )}
             </div>
 
-            {showDropdown && filteredScripts.length > 0 && (
+            {showDropdown && results.length > 0 && (
               <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                {filteredScripts.map((script) => (
+                {results.map((script) => (
                   <button
-                    key={script.id}
+                    key={script.exchangeToken}
                     onClick={() => handleScriptSelect(script)}
                     className="w-full text-left px-4 py-3 hover:bg-background border-b border-border last:border-b-0 transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <p className="font-semibold text-foreground text-sm">
-                          {script.symbol}
+                          {script.segment === "OPTSTK" ||
+                          script.segment === "OPTIDX"
+                            ? formatOptionLabel(script)
+                            : script.tradingSymbol}
                         </p>
                         <p className="text-xs text-muted-foreground mt-0.5">
                           {script.name}
@@ -123,7 +133,7 @@ export default function Sidebar() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-semibold text-foreground text-sm">
-                      {selectedScript.symbol}
+                      {selectedScript.tradingSymbol}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {selectedScript.name}
@@ -168,7 +178,7 @@ export default function Sidebar() {
           label="Quantity"
           type="number"
           value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
+          onChange={(e) => setQuantity(Number(e.target.value))}
           placeholder="e.g. 50"
         />
 
@@ -177,7 +187,7 @@ export default function Sidebar() {
           label="Order Type"
           value={orderType}
           onChange={(e) => setOrderType(e.target.value)}
-          options={["Limit", "Market", "Stop"]}
+          options={ORDER_TYPE_OPTIONS}
         />
 
         {/* Limit Price */}
@@ -185,7 +195,7 @@ export default function Sidebar() {
           label="Limit Price"
           type="number"
           value={limitPrice}
-          onChange={(e) => setLimitPrice(e.target.value)}
+          onChange={(e) => setLimitPrice(Number(e.target.value))}
           placeholder="e.g. 225.50"
         />
 
@@ -193,8 +203,8 @@ export default function Sidebar() {
         <FormSelect
           label="Algorithm"
           value={algorithm}
-          onChange={(e) => setAlgorithm(e.target.value)}
-          options={["Target ₹1 / SL ₹1", "VWAP", "DMA"]}
+          onChange={(e) => setAlgorithm(e.target.value as AlgorithmCode)}
+          options={ALGORITHM_PRESETS}
         />
 
         {/* Target & Stop Loss */}
@@ -203,7 +213,7 @@ export default function Sidebar() {
             label="Target"
             type="number"
             value={target}
-            onChange={(e) => setTarget(e.target.value)}
+            onChange={(e) => setTarget(Number(e.target.value))}
             placeholder="e.g. 230"
           />
 
@@ -211,7 +221,7 @@ export default function Sidebar() {
             label="Stop Loss"
             type="number"
             value={stopLoss}
-            onChange={(e) => setStopLoss(e.target.value)}
+            onChange={(e) => setStopLoss(Number(e.target.value))}
             placeholder="e.g. 220"
           />
         </div>

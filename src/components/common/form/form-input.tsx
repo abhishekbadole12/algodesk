@@ -20,11 +20,10 @@ export default function FormInput({
       </label>
       <input
         type={type}
-        value={value}
+        value={value ?? ""}
         onChange={onChange}
         placeholder={placeholder}
-        className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm 
-        focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground"
+        className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground"
       />
     </div>
   );

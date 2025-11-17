@@ -4,13 +4,6 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
 
-    if (!process.env.MSTOCK_USERNAME || !process.env.MSTOCK_PASSWORD) {
-      return NextResponse.json({
-        success: false,
-        error: "Missing credentials",
-      });
-    }
-
     const payload = {
       clientcode: body.clientCode,
       password: body.password,

@@ -13,7 +13,7 @@ import MainContent from "@/app/dashboard/main-content/index";
 //
 import { useInstruments } from "@/hooks/useInstruments";
 //
-import { Tabs } from "@/enum/tabs.enum";
+import { Tabs } from "@/types/enum/tabs.enum";
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth();
@@ -28,7 +28,6 @@ export default function Home() {
   //   setIsAuthenticated(true);
   //   setShowAuthModal(false);
   // };
-  console.log(params);
 
   return (
     <div className="flex h-screen bg-background">

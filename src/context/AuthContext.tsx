@@ -41,12 +41,13 @@ export function AuthProvider({
     !!initialSession?.user
   );
   const [user, setUser] = useState<User | null>(initialSession?.user || null);
-  const { data, loading } = useInstruments();
+  // const { data, loading } = useInstruments();
 
   // -----------------------------
   // LOGIN (STEP 1)
   // -----------------------------
   const login = async (formData: { clientCode: string; password: string }) => {
+
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

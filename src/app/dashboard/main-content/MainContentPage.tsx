@@ -25,8 +25,8 @@ import { recentOrders } from "@/data/dummy/recentOrders.mock";
 import { completedTrades } from "@/data/dummy/completedTrades.mock";
 import { pendingOrders } from "@/data/dummy/pendingOrders.mock";
 //
-import { Tabs } from "@/enum/tabs.enum";
-import { TAB_META } from "@/enum/tabs.meta";
+import { Tabs } from "@/types/enum/tabs.enum";
+import { TAB_META } from "@/types/enum/tabs.meta";
 //
 
 interface IMainContent {

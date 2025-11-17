@@ -11,7 +11,7 @@ interface FundSummaryResponse {
 export async function GET() {
   try {
     const session = await getSession();
-    
+
     if (!session?.token) {
       return NextResponse.json(
         { status: false, message: "Not authenticated" },
@@ -32,10 +32,13 @@ export async function GET() {
       }
     );
 
-     const data = await res.json();
+    const data = await res.json();
 
-    if (!data.status) {
-      return NextResponse.json(data);
+    if (!data.status && data.errorcode === "IA401") {
+      return NextResponse.json(
+        { status: false, code: "TOKEN_EXPIRED" },
+        { status: 401 }
+      );
     }
 
     return NextResponse.json(data);
