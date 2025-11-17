@@ -32,15 +32,29 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
         ENTRY_OBJ: entry,
         EXIT_OBJ: null,
         PNL: 0,
+        PNL_PERCENT: 0,
         STATUS: "OPEN",
       });
       continue;
     }
 
+    // Prices
+    const entryPrice = entry.PRICE;
+    const exitPrice = exit.PRICE;
+
+    // Qty (BOTH BUY & SELL qty same)
+    const qty = entry.QUANTITY;
+
     // 🟢 Long OR Short completed trade
     const pnl =
       (exit.PRICE - entry.PRICE) *
       (entry.BUY_SELL === "BUY" ? entry.QUANTITY : -entry.QUANTITY);
+
+    //  PNL %
+    const pnlPercent =
+      entry.BUY_SELL === "BUY"
+        ? ((exitPrice - entryPrice) / entryPrice) * 100
+        : ((entryPrice - exitPrice) / entryPrice) * 100;
 
     result.push({
       SEC_ID: secId,
@@ -48,6 +62,7 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
       ENTRY_OBJ: entry,
       EXIT_OBJ: exit,
       PNL: pnl,
+      PNL_PERCENT: pnlPercent,
       STATUS: "CLOSED",
     });
   }

@@ -1,4 +1,4 @@
-export default function TableHead({ columns }: { columns: string[] }) {
+export default function TableColumnHeader({ columns }: { columns: string[] }) {
   return (
     <thead>
       <tr className="border-b border-border bg-background/50">

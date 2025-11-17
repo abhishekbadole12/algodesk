@@ -4,17 +4,21 @@ import { AlertCircle, CheckCircle, ChevronDown } from "lucide-react";
 interface TradeRowProps {
   entry: TradeBookItem;
   exit: TradeBookItem;
+  trade_status: string;
   pnl: number;
+  pnl_percent: any;
   columns: string[];
   isExpandable: boolean;
   isExpanded?: boolean;
   onToggleExpand?: (id: string) => void;
 }
 
-export default function TradeRow({
+export default function TableRow({
   entry,
   exit,
   pnl,
+  pnl_percent,
+  trade_status,
   columns,
   isExpandable = true,
   isExpanded,
@@ -116,11 +120,11 @@ export default function TradeRow({
                           : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <p>{pnl.toFixed(2)}</p>
-                      {/* <p className="text-xs">
+                      <p>₹{pnl.toFixed(2)}</p>
+                      <p className="text-xs">
                         {isProfitable ? "+" : ""}
-                        {trade.pnlPercent.toFixed(2)}%
-                      </p> */}
+                        {pnl_percent.toFixed(2)}%
+                      </p>
                     </div>
                   </td>
                 );
@@ -216,7 +220,7 @@ export default function TradeRow({
 
                     <div className="flex items-center gap-4">
                       <div className="flex items-center gap-2">
-                        {leg.status === "executed" ? (
+                        {trade_status === "CLOSED" ? (
                           <>
                             <CheckCircle className="w-3 h-3 text-green-500" />
                             <span className="text-xs text-green-600 dark:text-green-400 font-medium">
