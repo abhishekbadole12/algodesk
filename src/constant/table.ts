@@ -18,3 +18,15 @@ export const RECENT_ORDERS_COLUMNS = [
   "Status",
   "Time",
 ];
+
+export const COMPLETED_TRADES_COLUMNS = [
+  "",
+  "Symbol",
+  "Side",
+  "Order Type",
+  "Entry Price",
+  "Qty",
+  "Status",
+  "P&L",
+  "Entry Time",
+];

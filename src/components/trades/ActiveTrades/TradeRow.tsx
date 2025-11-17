@@ -1,7 +1,10 @@
+import { TradeBookItem } from "@/types/orders/tradebook.types";
 import { AlertCircle, CheckCircle, ChevronDown } from "lucide-react";
 
 interface TradeRowProps {
-  trade: any; // *
+  entry: TradeBookItem;
+  exit: TradeBookItem;
+  pnl: number;
   columns: string[];
   isExpandable: boolean;
   isExpanded?: boolean;
@@ -9,13 +12,15 @@ interface TradeRowProps {
 }
 
 export default function TradeRow({
-  trade,
+  entry,
+  exit,
+  pnl,
   columns,
   isExpandable = true,
   isExpanded,
   onToggleExpand = () => {},
 }: TradeRowProps) {
-  const isProfitable = trade.pnl >= 0;
+  const isProfitable = pnl >= 0;
 
   return (
     <>
@@ -23,8 +28,8 @@ export default function TradeRow({
         {isExpandable && (
           <td className="py-3 px-3">
             <button
-              onClick={() => onToggleExpand(trade.id)}
-              className="text-muted-foreground hover:text-foreground transition-colors"
+              onClick={() => onToggleExpand(entry.SEC_ID)}
+              className="text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
             >
               <ChevronDown
                 className={`w-4 h-4 transition-transform ${
@@ -43,10 +48,10 @@ export default function TradeRow({
                   <td key={index} className="py-3 px-3">
                     <div>
                       <p className="font-semibold text-foreground">
-                        {trade.symbol}
+                        {entry.SYMBOL}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {trade.exchange}
+                        {entry.EXCHANGE}
                       </p>
                     </div>
                   </td>
@@ -57,12 +62,12 @@ export default function TradeRow({
                   <td key={index} className="py-3 px-3">
                     <span
                       className={`px-2 py-1 rounded text-xs font-semibold ${
-                        trade.side === "BUY"
+                        entry.BUY_SELL === "BUY"
                           ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                           : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                       }`}
                     >
-                      {trade.side}
+                      {entry.BUY_SELL?.toUpperCase()}
                     </span>
                   </td>
                 );
@@ -70,7 +75,7 @@ export default function TradeRow({
               case "Order Type":
                 return (
                   <td key={index} className="py-3 px-3 text-foreground text-sm">
-                    {trade.orderType}
+                    {entry.ORDER_TYPE}
                   </td>
                 );
 
@@ -80,24 +85,24 @@ export default function TradeRow({
                     key={index}
                     className="py-3 px-3 text-foreground font-semibold"
                   >
-                    ₹{trade.entryPrice.toFixed(2)}
+                    ₹{entry.PRICE.toFixed(2)}
                   </td>
                 );
 
-              case "Price":
+              case "Exit Price":
                 return (
                   <td
                     key={index}
                     className="py-3 px-3 text-foreground font-semibold"
                   >
-                    ₹{trade.entryPrice?.toFixed(2)}
+                    ₹{exit.PRICE?.toFixed(2)}
                   </td>
                 );
 
               case "Qty":
                 return (
                   <td key={index} className="py-3 px-3 text-foreground">
-                    {trade.quantity}
+                    {entry.QUANTITY}
                   </td>
                 );
 
@@ -111,11 +116,11 @@ export default function TradeRow({
                           : "text-red-600 dark:text-red-400"
                       }`}
                     >
-                      <p>₹{Math.abs(trade.pnl).toLocaleString()}</p>
-                      <p className="text-xs">
+                      <p>{pnl.toFixed(2)}</p>
+                      {/* <p className="text-xs">
                         {isProfitable ? "+" : ""}
                         {trade.pnlPercent.toFixed(2)}%
-                      </p>
+                      </p> */}
                     </div>
                   </td>
                 );
@@ -124,7 +129,7 @@ export default function TradeRow({
                 return (
                   <td key={index} className="py-3 px-3">
                     <div className="flex items-center gap-2">
-                      {trade.status === "executed" ? (
+                      {true ? (
                         <>
                           <CheckCircle className="w-4 h-4 text-green-500" />
                           <span className="text-green-600 dark:text-green-400 font-medium text-sm">
@@ -149,7 +154,27 @@ export default function TradeRow({
                     key={index}
                     className="py-3 px-3 text-muted-foreground text-sm"
                   >
-                    {trade.time}
+                    {entry.ORDER_DATE_TIME.split(" ")[1]}
+                  </td>
+                );
+
+              case "Entry Time":
+                return (
+                  <td
+                    key={index}
+                    className="py-3 px-3 text-muted-foreground text-sm"
+                  >
+                    {entry.ORDER_DATE_TIME.split(" ")[1]}
+                  </td>
+                );
+
+              case "Exit Time":
+                return (
+                  <td
+                    key={index}
+                    className="py-3 px-3 text-muted-foreground text-sm"
+                  >
+                    {exit ? exit.ORDER_DATE_TIME.split(" ")[1] : "-"}
                   </td>
                 );
 
@@ -167,25 +192,25 @@ export default function TradeRow({
                 Trade Legs
               </p>
               <div className="space-y-2">
-                {trade.legs.map((leg) => (
+                {[exit].map((leg) => (
                   <div
-                    key={leg.id}
+                    key={leg.SEC_ID}
                     className="flex items-center justify-between bg-card border border-border p-3 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
                       <span
                         className={`text-xs font-bold px-2 py-1 rounded ${
-                          leg.type === "Entry"
+                          leg.BUY_SELL === "Entry"
                             ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                            : leg.type === "Target"
+                            : leg.BUY_SELL === "Target"
                             ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                             : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                         }`}
                       >
-                        {leg.type}
+                        {leg.BUY_SELL}
                       </span>
                       <p className="font-semibold text-foreground">
-                        ₹{leg.price.toFixed(2)}
+                        ₹{leg.PRICE.toFixed(2)}
                       </p>
                     </div>
 
@@ -208,7 +233,7 @@ export default function TradeRow({
                         )}
                       </div>
                       <span className="text-xs text-muted-foreground w-16 text-right">
-                        {leg.time}
+                        {leg.ORDER_DATE_TIME.split(" ")[1]}
                       </span>
                     </div>
                   </div>

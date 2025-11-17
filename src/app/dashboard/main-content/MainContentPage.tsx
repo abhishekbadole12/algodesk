@@ -33,6 +33,7 @@ import { TAB_META } from "@/types/enum/tabs.meta";
 import { ACTIVE_TRADES_COLUMNS, RECENT_ORDERS_COLUMNS } from "@/constant/table";
 //
 import { usePositions } from "@/hooks/usePositions";
+import { useTradeBook } from "@/hooks/useTradeBook";
 //
 
 interface IMainContent {
@@ -43,6 +44,7 @@ export default function MainContent({ activeTab }: IMainContent) {
   const router = useRouter();
 
   // const { positions, loading, error } = usePositions();
+  
 
   const [selectedItem, setSelectedItem] = useState(watchlistItems[0]);
   const [expandedTrades, setExpandedTrades] = useState<Record<string, boolean>>(

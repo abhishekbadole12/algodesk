@@ -14,7 +14,11 @@ export function usePositions() {
         const res = await fetch("/api/positions");
         const data = await res.json();
 
-        if (!data.success) throw new Error(data.error);
+        if (!data.success) {
+          setError(data.error_msg);
+          setLoading(false);
+          return;
+        }
 
         setPositions(data || []);
       } catch (err: any) {
