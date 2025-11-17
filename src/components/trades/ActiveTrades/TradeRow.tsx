@@ -16,7 +16,6 @@ export default function TradeRow({
   onToggleExpand = () => {},
 }: TradeRowProps) {
   const isProfitable = trade.pnl >= 0;
-  console.log("zzz", columns);
 
   return (
     <>
