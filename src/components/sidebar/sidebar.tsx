@@ -20,19 +20,20 @@ import { ORDER_TYPE_OPTIONS } from "@/types/config/order-type";
 
 export default function Sidebar() {
   const [searchInput, setSearchInput] = useState("");
+
+  const results = useInstrumentSearch(searchInput);
+
   const [selectedScript, setSelectedScript] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [side, setSide] = useState("BUY");
-  const [quantity, setQuantity] = useState<number>(0);
+  const [quantity, setQuantity] = useState("");
   const [orderType, setOrderType] = useState("Limit");
-  const [limitPrice, setLimitPrice] = useState<number>(0);
+  const [limitPrice, setLimitPrice] = useState("");
   const [algorithm, setAlgorithm] = useState<AlgorithmCode>(
     AlgorithmCode.TARGET_1_STOPLOSS_1
   );
-  const [target, setTarget] = useState<number>(0);
-  const [stopLoss, setStopLoss] = useState<number>(0); //
-  // const [query, setQuery] = useState("");
-  const results = useInstrumentSearch(searchInput);
+  const [target, setTarget] = useState("");
+  const [stopLoss, setStopLoss] = useState("");
 
   const handleScriptSelect = (script) => {
     let name =
@@ -96,7 +97,7 @@ export default function Sidebar() {
                   <button
                     key={script.exchangeToken}
                     onClick={() => handleScriptSelect(script)}
-                    className="w-full text-left px-4 py-3 hover:bg-background border-b border-border last:border-b-0 transition-colors"
+                    className="w-full text-left px-4 py-3 hover:bg-background border-b border-border cursor-pointer last:border-b-0 transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -178,7 +179,7 @@ export default function Sidebar() {
           label="Quantity"
           type="number"
           value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
+          onChange={(e) => setQuantity(e.target.value)}
           placeholder="e.g. 50"
         />
 
@@ -195,7 +196,7 @@ export default function Sidebar() {
           label="Limit Price"
           type="number"
           value={limitPrice}
-          onChange={(e) => setLimitPrice(Number(e.target.value))}
+          onChange={(e) => setLimitPrice(e.target.value)}
           placeholder="e.g. 225.50"
         />
 
@@ -213,7 +214,7 @@ export default function Sidebar() {
             label="Target"
             type="number"
             value={target}
-            onChange={(e) => setTarget(Number(e.target.value))}
+            onChange={(e) => setTarget(e.target.value)}
             placeholder="e.g. 230"
           />
 
@@ -221,7 +222,7 @@ export default function Sidebar() {
             label="Stop Loss"
             type="number"
             value={stopLoss}
-            onChange={(e) => setStopLoss(Number(e.target.value))}
+            onChange={(e) => setStopLoss(e.target.value)}
             placeholder="e.g. 220"
           />
         </div>
