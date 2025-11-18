@@ -11,6 +11,18 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
 
   const result: any[] = [];
 
+  // Format ms → HH:MM:SS
+  const formatDuration = (ms: number) => {
+    if (!ms || ms <= 0) return "00:00:00";
+
+    const totalSeconds = Math.floor(ms / 1000);
+    // const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes} min ${seconds} sec`;
+  };
+
   for (const secId in grouped) {
     const items = grouped[secId];
 
@@ -24,20 +36,40 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
     const entry = items[1];
     const exit = items[0]; // undefined if not closed
 
-   // 🟡 ONLY ONE TRADE → OPEN POSITION
+    const direction = entry?.BUY_SELL === "BUY" ? "LONG" : "SHORT";
+
+    // 🟡 ONLY ONE TRADE → OPEN POSITION
     if (!exit) {
       result.push({
         SEC_ID: secId,
         SETTLOR: entry.SETTLOR,
         ENTRY_OBJ: entry,
-        EXIT_OBJ: {},      // << return an empty object
+        EXIT_OBJ: {}, // << return an empty object
         PNL: 0,
         PNL_PERCENT: 0,
         STATUS: "OPEN",
+        DIRECTION: direction,
+        TRADE_DURATION: "",
       });
       continue;
     }
 
+    function parseTradeDate(dateStr: string): number {
+      // dateStr = "18-11-2025 10:11:56"
+      const [datePart, timePart] = dateStr.split(" ");
+      const [dd, mm, yyyy] = datePart.split("-");
+
+      // Convert → "2025-11-18 10:11:56"
+      const formatted = `${yyyy}-${mm}-${dd} ${timePart}`;
+
+      return new Date(formatted).getTime();
+    }
+
+    // Time duration calculation
+    const entryTime = parseTradeDate(entry.ORDER_DATE_TIME);
+    const exitTime = exit ? parseTradeDate(exit.ORDER_DATE_TIME) : null;
+
+    const duration = exitTime && formatDuration(exitTime - entryTime);
 
     // Prices
     const entryPrice = entry.PRICE;
@@ -48,8 +80,7 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
 
     // 🟢 Long OR Short completed trade
     const pnl =
-      (exit.PRICE - entry.PRICE) *
-        (entry.BUY_SELL === "BUY" ? qty : -qty);
+      (exit.PRICE - entry.PRICE) * (entry.BUY_SELL === "BUY" ? qty : -qty);
 
     //  PNL %
     const pnlPercent =
@@ -65,6 +96,8 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
       PNL: pnl,
       PNL_PERCENT: pnlPercent,
       STATUS: "CLOSED",
+      DIRECTION: direction,
+      TRADE_DURATION: duration,
     });
   }
 

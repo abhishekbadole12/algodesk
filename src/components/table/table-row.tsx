@@ -2,11 +2,13 @@ import { TradeBookItem } from "@/types/orders/tradebook.types";
 import { AlertCircle, CheckCircle, ChevronDown } from "lucide-react";
 
 interface TradeRowProps {
+  direction: "SHORT" | "LONG";
   entry: TradeBookItem;
   exit: TradeBookItem;
-  trade_status: string;
   pnl: number;
   pnl_percent: any;
+  trade_duration: any;
+  trade_status: string;
   columns: string[];
   isExpandable: boolean;
   isExpanded?: boolean;
@@ -14,10 +16,12 @@ interface TradeRowProps {
 }
 
 export default function TableRow({
+  direction,
   entry,
   exit,
   pnl,
   pnl_percent,
+  trade_duration,
   trade_status,
   columns,
   isExpandable = true,
@@ -71,7 +75,7 @@ export default function TableRow({
                           : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                       }`}
                     >
-                      {entry.BUY_SELL?.toUpperCase()}
+                      {direction?.toUpperCase()}
                     </span>
                   </td>
                 );
@@ -152,13 +156,13 @@ export default function TableRow({
                   </td>
                 );
 
-              case "Time":
+              case "Trade Duration":
                 return (
                   <td
                     key={index}
                     className="py-3 px-3 text-muted-foreground text-sm"
                   >
-                    {entry.ORDER_DATE_TIME.split(" ")[1]}
+                    {trade_duration}
                   </td>
                 );
 
@@ -196,7 +200,7 @@ export default function TableRow({
                 Trade Legs
               </p>
               <div className="space-y-2">
-                {[exit].map((leg) => (
+                {[entry, exit].map((leg) => (
                   <div
                     key={leg.SEC_ID}
                     className="flex items-center justify-between bg-card border border-border p-3 rounded-lg"
@@ -204,14 +208,14 @@ export default function TableRow({
                     <div className="flex items-center gap-3">
                       <span
                         className={`text-xs font-bold px-2 py-1 rounded ${
-                          leg.BUY_SELL === "Entry"
+                          leg.BUY_SELL === "BUY"
                             ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
-                            : leg.BUY_SELL === "Target"
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                            : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                            : leg.BUY_SELL === "SELL"
+                            ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                            : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                         }`}
                       >
-                        {leg.BUY_SELL}
+                        {leg.BUY_SELL === "BUY" ? "ENTRY" : "EXIT"}
                       </span>
                       <p className="font-semibold text-foreground">
                         ₹{leg.PRICE.toFixed(2)}

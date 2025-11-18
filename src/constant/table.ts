@@ -26,7 +26,7 @@ export const COMPLETED_TRADES_COLUMNS = [
   "Order Type",
   "Entry Price",
   "Qty",
-  "Status",
   "P&L",
-  "Entry Time",
+  "Status",
+  "Trade Duration",
 ];

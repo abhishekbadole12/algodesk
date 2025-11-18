@@ -33,10 +33,12 @@ export default function CompletedTradesTable() {
         .map((trade) => (
           <TableRow
             key={trade?.SEC_ID}
+            direction={trade.DIRECTION}
             entry={trade.ENTRY_OBJ}
             exit={trade.EXIT_OBJ}
             trade_status={trade.STATUS}
             pnl_percent={trade.PNL_PERCENT}
+            trade_duration={trade.TRADE_DURATION}
             isExpandable
             pnl={trade.PNL}
             columns={COMPLETED_TRADES_COLUMNS}
