@@ -15,24 +15,32 @@ export default function ActiveTrade() {
   const handleToggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+  console.log(trades);
 
   return (
     <>
-      <Table title="Active Trades" Icon={Play} columns={ACTIVE_TRADES_COLUMNS} isLoading={loading}>
-        {trades.map((trade) => (
-          <TableRow
-            key={trade?.SEC_ID}
-            entry={trade.ENTRY_OBJ}
-            exit={trade.EXIT_OBJ}
-            trade_status={trade.STATUS}
-            isExpandable
-            pnl={trade.PNL}
-            pnl_percent={trade.PNL_PERCENT}
-            columns={ACTIVE_TRADES_COLUMNS}
-            isExpanded={expanded[trade.SEC_ID]}
-            onToggleExpand={handleToggleExpand}
-          />
-        ))}
+      <Table
+        title="Active Trades"
+        Icon={Play}
+        columns={ACTIVE_TRADES_COLUMNS}
+        isLoading={loading}
+      >
+        {trades
+          .filter((t) => t.STATUS === "OPEN")
+          .map((trade) => (
+            <TableRow
+              key={trade?.SEC_ID}
+              entry={trade.ENTRY_OBJ}
+              exit={trade.EXIT_OBJ}
+              trade_status={trade.STATUS}
+              isExpandable
+              pnl={trade.PNL}
+              pnl_percent={trade.PNL_PERCENT}
+              columns={ACTIVE_TRADES_COLUMNS}
+              isExpanded={expanded[trade.SEC_ID]}
+              onToggleExpand={handleToggleExpand}
+            />
+          ))}
       </Table>
 
       {/* Recent Orders */}

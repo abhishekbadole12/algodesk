@@ -24,19 +24,20 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
     const entry = items[1];
     const exit = items[0]; // undefined if not closed
 
-    // 🟡 Only entry exists → OPEN trade
-    if (items.length === 1) {
+   // 🟡 ONLY ONE TRADE → OPEN POSITION
+    if (!exit) {
       result.push({
         SEC_ID: secId,
         SETTLOR: entry.SETTLOR,
         ENTRY_OBJ: entry,
-        EXIT_OBJ: null,
+        EXIT_OBJ: {},      // << return an empty object
         PNL: 0,
         PNL_PERCENT: 0,
         STATUS: "OPEN",
       });
       continue;
     }
+
 
     // Prices
     const entryPrice = entry.PRICE;
@@ -48,7 +49,7 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
     // 🟢 Long OR Short completed trade
     const pnl =
       (exit.PRICE - entry.PRICE) *
-      (entry.BUY_SELL === "BUY" ? entry.QUANTITY : -entry.QUANTITY);
+        (entry.BUY_SELL === "BUY" ? qty : -qty);
 
     //  PNL %
     const pnlPercent =

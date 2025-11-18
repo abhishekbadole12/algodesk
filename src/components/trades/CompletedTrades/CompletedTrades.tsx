@@ -28,21 +28,22 @@ export default function CompletedTradesTable() {
       columns={COMPLETED_TRADES_COLUMNS}
       isLoading={loading}
     >
-      {trades.map((trade) => {
-        return (
+      {trades
+        .filter((t) => t.STATUS === "CLOSED")
+        .map((trade) => (
           <TableRow
             key={trade?.SEC_ID}
             entry={trade.ENTRY_OBJ}
             exit={trade.EXIT_OBJ}
-              trade_status={trade.STATUS}   pnl_percent={trade.PNL_PERCENT}
+            trade_status={trade.STATUS}
+            pnl_percent={trade.PNL_PERCENT}
             isExpandable
             pnl={trade.PNL}
             columns={COMPLETED_TRADES_COLUMNS}
             isExpanded={expanded[trade.SEC_ID]}
             onToggleExpand={handleToggleExpand}
           />
-        );
-      })}
+        ))}
     </Table>
   );
 }

@@ -39,7 +39,18 @@ export default function Table({
               </tr>
             )}
 
-            {children}
+            {!isLoading && React.Children.count(children) === 0 && (
+              <tr>
+                <td
+                  colSpan={10}
+                  className="p-4 text-center text-muted-foreground"
+                >
+                  No trades to show
+                </td>
+              </tr>
+            )}
+
+            {!isLoading && children}
           </tbody>
         </table>
       </div>

@@ -20,7 +20,7 @@ export function useTradeBook() {
           setLoading(false);
           return;
         }
-
+        
         setTrades(formatCompletedTrades(data.data) || []);
       } catch (err: any) {
         setError(err.message || "Unable to fetch tradebook");
@@ -28,7 +28,7 @@ export function useTradeBook() {
         setLoading(false);
       }
     };
-
+    
     fetchTrades();
   }, []);
 
