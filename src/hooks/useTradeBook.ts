@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-//
+import { useEffect, useState, useCallback } from "react";
 import { TradeBookItem } from "@/types/orders/tradebook.types";
-//
 import { formatCompletedTrades } from "@/utils/formatCompletedTrades";
 
 export function useTradeBook() {
@@ -9,28 +7,39 @@ export function useTradeBook() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchTrades = async () => {
-      try {
-        const res = await fetch("/api/orders/tradebook");
-        const data = await res.json();
+  const fetchTrades = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        if (!data.success) {
-          setError(data.error_msg);
-          setLoading(false);
-          return;
-        }
-        
-        setTrades(formatCompletedTrades(data.data) || []);
-      } catch (err: any) {
-        setError(err.message || "Unable to fetch tradebook");
-      } finally {
-        setLoading(false);
+      const res = await fetch("/api/orders/tradebook", {
+        cache: "no-store",
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        setError(data.error_msg);
+        setTrades([]);
+        return;
       }
-    };
-    
-    fetchTrades();
+
+      setTrades(formatCompletedTrades(data.data) || []);
+    } catch (err: any) {
+      setError(err.message || "Unable to fetch tradebook");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return { trades, loading, error };
+  useEffect(() => {
+    fetchTrades();
+  }, [fetchTrades]);
+
+  return {
+    trades,
+    loading,
+    error,
+    reload: fetchTrades, // 🔄 exposing reload
+  };
 }

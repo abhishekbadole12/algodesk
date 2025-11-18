@@ -1,8 +1,8 @@
 import React from "react";
+//
 import TableHeader from "./table-header";
-import { Clock } from "lucide-react";
 import TableColumnHeader from "./table-column-header";
-import { RECENT_ORDERS_COLUMNS } from "@/constant/table";
+//
 
 interface TableProps {
   title: string;
@@ -10,6 +10,7 @@ interface TableProps {
   columns: string[];
   children: React.ReactNode;
   isLoading: boolean;
+  onReload: () => void;
 }
 
 export default function Table({
@@ -18,10 +19,16 @@ export default function Table({
   columns,
   children,
   isLoading,
+  onReload,
 }: TableProps) {
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden">
-      <TableHeader title={title} Icon={Icon} />
+      <TableHeader
+        title={title}
+        Icon={Icon}
+        isLoading={isLoading}
+        onReload={onReload}
+      />
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">

@@ -13,7 +13,7 @@ import Table from "@/components/table/table";
 //
 
 export default function CompletedTradesTable() {
-  const { trades, loading, error } = useTradeBook();
+  const { trades, loading, error, reload } = useTradeBook();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
@@ -27,6 +27,7 @@ export default function CompletedTradesTable() {
       Icon={History}
       columns={COMPLETED_TRADES_COLUMNS}
       isLoading={loading}
+      onReload={reload}
     >
       {trades
         .filter((t) => t.STATUS === "CLOSED")
