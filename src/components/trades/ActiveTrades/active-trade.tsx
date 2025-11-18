@@ -8,14 +8,13 @@ import { Play } from "lucide-react";
 import React, { useState } from "react";
 
 export default function ActiveTrade() {
-  const { trades, loading, error } = useTradeBook();
+  const { trades, loading, error, reload } = useTradeBook();
 
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   const handleToggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-  console.log(trades);
 
   return (
     <>
@@ -24,6 +23,7 @@ export default function ActiveTrade() {
         Icon={Play}
         columns={ACTIVE_TRADES_COLUMNS}
         isLoading={loading}
+        onReload={reload}
       >
         {trades
           .filter((t) => t.STATUS === "OPEN")
@@ -35,6 +35,8 @@ export default function ActiveTrade() {
               trade_status={trade.STATUS}
               isExpandable
               pnl={trade.PNL}
+              direction={trade.direction}
+              trade_duration={trade.DURATION}
               pnl_percent={trade.PNL_PERCENT}
               columns={ACTIVE_TRADES_COLUMNS}
               isExpanded={expanded[trade.SEC_ID]}

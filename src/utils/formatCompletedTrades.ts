@@ -1,6 +1,7 @@
 import { TradeBookItem } from "@/types/orders/tradebook.types";
+import { ITrade } from "@/types/trade";
 
-export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
+export function formatCompletedTrades(trades: TradeBookItem[]): ITrade[] {
   const grouped: Record<string, TradeBookItem[]> = {};
 
   // Group all trades by SEC_ID
@@ -9,11 +10,11 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
     grouped[t.SEC_ID].push(t);
   }
 
-  const result: any[] = [];
+  const result: ITrade[] = [];
 
   // Format ms → HH:MM:SS
   const formatDuration = (ms: number) => {
-    if (!ms || ms <= 0) return "00:00:00";
+    if (!ms || ms <= 0) return "-";
 
     const totalSeconds = Math.floor(ms / 1000);
     // const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
@@ -44,12 +45,12 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
         SEC_ID: secId,
         SETTLOR: entry.SETTLOR,
         ENTRY_OBJ: entry,
-        EXIT_OBJ: {}, // << return an empty object
+        EXIT_OBJ: null, // << return an empty object
         PNL: 0,
         PNL_PERCENT: 0,
         STATUS: "OPEN",
         DIRECTION: direction,
-        TRADE_DURATION: "",
+        TRADE_DURATION: null,
       });
       continue;
     }
@@ -69,7 +70,7 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
     const entryTime = parseTradeDate(entry.ORDER_DATE_TIME);
     const exitTime = exit ? parseTradeDate(exit.ORDER_DATE_TIME) : null;
 
-    const duration = exitTime && formatDuration(exitTime - entryTime);
+    const duration = exitTime ? formatDuration(exitTime - entryTime): null;
 
     // Prices
     const entryPrice = entry.PRICE;
@@ -97,7 +98,7 @@ export function formatCompletedTrades(trades: TradeBookItem[]): any[] {
       PNL_PERCENT: pnlPercent,
       STATUS: "CLOSED",
       DIRECTION: direction,
-      TRADE_DURATION: duration,
+      TRADE_DURATION: duration ?? null,
     });
   }
 
