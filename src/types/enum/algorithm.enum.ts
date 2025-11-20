@@ -1,4 +1,4 @@
-export enum AlgorithmCode {
+export enum Algorithm {
   TARGET_1_STOPLOSS_1 = "TARGET_1_STOPLOSS_1",
   TARGET_2_STOPLOSS_1 = "TARGET_2_STOPLOSS_1",
   TARGET_3_STOPLOSS_1_5 = "TARGET_3_STOPLOSS_1_5",

@@ -26,11 +26,12 @@ export interface ActiveTrade {
 export interface ITrade {
   SEC_ID: string;
   SETTLOR: string;
-  ENTRY_OBJ: TradeBookItem | null;
-  EXIT_OBJ: TradeBookItem | null;
+  ENTRY_OBJ: TradeBookItem[] | null;
+  EXIT_OBJ: TradeBookItem[] | null;
   PNL: number;
   PNL_PERCENT: number;
-  STATUS: "OPEN" | "CLOSED";
+  STATUS: "OPEN" | "CLOSED" | "PARTIAL";
   DIRECTION: "LONG" | "SHORT";
   TRADE_DURATION: string| null;
+  LEGS: TradeBookItem[];
 }

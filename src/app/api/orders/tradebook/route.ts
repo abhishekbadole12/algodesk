@@ -21,6 +21,7 @@ export async function GET() {
           "X-Mirae-Version": process.env.MSTOCK_API_VERSION!,
           Authorization: `Bearer ${session.token}`,
           "X-PrivateKey": process.env.MSTOCK_API_KEY_TYPE_A!,
+             "Content-Type": "application/json",
         },
       }
     );

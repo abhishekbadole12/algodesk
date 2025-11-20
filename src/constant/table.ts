@@ -7,7 +7,7 @@ export const ACTIVE_TRADES_COLUMNS = [
   "Qty",
   "P&L",
   "Status",
-  "Time",
+  "Trade Duration",
 ];
 
 export const RECENT_ORDERS_COLUMNS = [

@@ -1,11 +1,16 @@
 "use client";
 
+import { useState } from "react";
+//
+import { Play } from "lucide-react";
+//
+import { useTradeBook } from "@/hooks/useTradeBook";
+//
 import Table from "@/components/table/table";
 import TableRow from "@/components/table/table-row";
+//
 import { ACTIVE_TRADES_COLUMNS } from "@/constant/table";
-import { useTradeBook } from "@/hooks/useTradeBook";
-import { Play } from "lucide-react";
-import React, { useState } from "react";
+//
 
 export default function ActiveTrade() {
   const { trades, loading, error, reload } = useTradeBook();
@@ -15,6 +20,7 @@ export default function ActiveTrade() {
   const handleToggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+  console.log(trades);
 
   return (
     <>
@@ -30,13 +36,14 @@ export default function ActiveTrade() {
           .map((trade) => (
             <TableRow
               key={trade?.SEC_ID}
-              entry={trade.ENTRY_OBJ}
-              exit={trade.EXIT_OBJ}
+              legs={trade.LEGS} // full timeline
+              entryLegs={trade.ENTRY_OBJ} // only entries
+              exitLegs={trade.EXIT_OBJ} // only exits
               trade_status={trade.STATUS}
               isExpandable
               pnl={trade.PNL}
-              direction={trade.direction}
-              trade_duration={trade.DURATION}
+              direction={trade.DIRECTION}
+              trade_duration={trade.TRADE_DURATION}
               pnl_percent={trade.PNL_PERCENT}
               columns={ACTIVE_TRADES_COLUMNS}
               isExpanded={expanded[trade.SEC_ID]}

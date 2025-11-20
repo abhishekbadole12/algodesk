@@ -1,68 +1,70 @@
-import React from "react";
-import Button from "../button";
+//
+//
 import FormInput from "../../common/form/form-input";
 import FormSelect from "../../common/form/form-select";
-import { AlgorithmCode } from "@/types/enum/algorithm.enum";
-//
 import ScriptSelector from "./sections/script-selector";
 import SideSelector from "./sections/side-selector";
-import { ORDER_TYPE_OPTIONS } from "@/types/config/order-type";
+//
 import { ALGORITHM_PRESETS } from "@/constant/algorithm";
+//
+import { ORDER_TYPE_OPTIONS } from "@/types/config/order-type";
+import { Algorithm } from "@/types/enum/algorithm.enum";
+//
 
-export default function SidebarBody({ form }) {
+export default function SidebarBody({ form }: any) {
   const {
-    quantity,
-    setQuantity,
-    orderType,
-    setOrderType,
-    limitPrice,
-    setLimitPrice,
-    algorithm,
-    setAlgorithm,
-    target,
-    setTarget,
-    stopLoss,
-    setStopLoss,
+    // state
+    trade,
+    algo,
+
+    // setters
+    updateTrade,
+    updateAlgo,
   } = form;
 
   return (
     <div className="flex-1 px-6 py-6 space-y-6 overflow-y-auto">
       {/* Script Section with Dropdown */}
-      <ScriptSelector form={form}/>
+      <ScriptSelector form={form} />
 
+      {/* BUY / SELL */}
       <SideSelector form={form} />
 
       {/* Quantity */}
       <FormInput
         label="Quantity"
+        name="quantity"
         type="number"
-        value={quantity}
-        onChange={(e) => setQuantity(e.target.value)}
+        value={trade.quantity}
+        onChange={(e) => updateTrade("quantity", e.target.value)}
         placeholder="e.g. 50"
       />
 
       {/* Order Type */}
       <FormSelect
         label="Order Type"
-        value={orderType}
-        onChange={(e) => setOrderType(e.target.value)}
+        // name=""
+        value={trade.ordertype}
+        onChange={(e) => updateTrade("ordertype", e.target.value)}
         options={ORDER_TYPE_OPTIONS}
       />
 
-      {/* Limit Price */}
+      {/* Price */}
       <FormInput
-        label="Limit Price"
+        label="Price"
+        name="price"
         type="number"
-        value={limitPrice}
-        onChange={(e) => setLimitPrice(e.target.value)}
+        value={trade.price}
+        onChange={(e) => updateTrade("price", e.target.value)}
         placeholder="e.g. 225.50"
       />
 
       {/* Algorithm */}
       <FormSelect
         label="Algorithm"
-        value={algorithm}
-        onChange={(e) => setAlgorithm(e.target.value as AlgorithmCode)}
+        // name="algorithm"
+        value={algo.code}
+        onChange={(e) => updateAlgo("code", e.target.value as Algorithm)}
         options={ALGORITHM_PRESETS}
       />
 
@@ -71,16 +73,18 @@ export default function SidebarBody({ form }) {
         <FormInput
           label="Target"
           type="number"
-          value={target}
-          onChange={(e) => setTarget(e.target.value)}
+          name="target"
+          value={algo.target}
+          onChange={(e) => updateAlgo("target", e.target.value)}
           placeholder="e.g. 230"
         />
 
         <FormInput
           label="Stop Loss"
           type="number"
-          value={stopLoss}
-          onChange={(e) => setStopLoss(e.target.value)}
+          name="stoploss"
+          value={algo.stoploss}
+          onChange={(e) => updateAlgo("stoploss", e.target.value)}
           placeholder="e.g. 220"
         />
       </div>

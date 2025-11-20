@@ -1,48 +1,69 @@
 // hooks/useSidebarForm.ts
+
 import { useState } from "react";
-import { AlgorithmCode } from "@/types/enum/algorithm.enum";
+//
+import { Algorithm } from "@/types/enum/algorithm.enum";
+import { ORDER_TYPE, SIDE } from "@/types/orders/order.enums";
+//
 
 export function useSidebarForm() {
-  const [searchInput, setSearchInput] = useState("");
-  const [selectedScript, setSelectedScript] = useState(null);
-  const [showDropdown, setShowDropdown] = useState(false);
+  /**
+   * -----------------------------
+   * 🔹 UI State (Not part of form)
+   * -----------------------------
+   */
+  const [search, setSearch] = useState({
+    query: "",
+    dropdownOpen: false,
+  });
 
-  const [side, setSide] = useState("BUY");
-  const [quantity, setQuantity] = useState("");
-  const [orderType, setOrderType] = useState("LIMIT");
-  const [limitPrice, setLimitPrice] = useState("");
-//   const [variety, setVariety] = useState("NORMAL");
+  /**
+   * -----------------------------
+   * 🔹 Trade Form State
+   * -----------------------------
+   */
+  const [trade, setTrade] = useState({
+    side: SIDE.BUY,
+    quantity: "",
+    ordertype: ORDER_TYPE.LIMIT,
+    price: "",
+    selectedScript: null as any,
+  });
 
-  const [algorithm, setAlgorithm] = useState<AlgorithmCode>(
-    AlgorithmCode.TARGET_1_STOPLOSS_1
-  );
+  /**
+   * -----------------------------
+   * 🔹 Algorithm Config State
+   * -----------------------------
+   */
+  const [algo, setAlgo] = useState({
+    code: Algorithm.TARGET_1_STOPLOSS_1,
+    target: "",
+    stopLoss: "",
+  });
 
-  const [target, setTarget] = useState("");
-  const [stopLoss, setStopLoss] = useState("");
+  /**
+   * -----------------------------
+   * 🔹 Helper Setters (Cleaner API)
+   * -----------------------------
+   */
+  const updateTrade = (field: string, value: any) =>
+    setTrade((prev) => ({ ...prev, [field]: value }));
+
+  const updateAlgo = (field: string, value: any) =>
+    setAlgo((prev) => ({ ...prev, [field]: value }));
+
+  const updateSearch = (field: string, value: any) =>
+    setSearch((prev) => ({ ...prev, [field]: value }));
 
   return {
-    searchInput,
-    setSearchInput,
-    selectedScript,
-    setSelectedScript,
-    showDropdown,
-    setShowDropdown,
+    // state
+    search,
+    trade,
+    algo,
 
-    side,
-    setSide,
-    quantity,
-    setQuantity,
-    orderType,
-    setOrderType,
-    limitPrice,
-    setLimitPrice,
-    algorithm,
-    setAlgorithm,
-    target,
-    setTarget,
-    stopLoss,
-    setStopLoss,
-    // variety,
-    // setVariety,
+    // setters
+    updateTrade,
+    updateAlgo,
+    updateSearch,
   };
 }

@@ -35,8 +35,9 @@ export default function CompletedTradesTable() {
           <TableRow
             key={trade?.SEC_ID}
             direction={trade.DIRECTION}
-            entry={trade.ENTRY_OBJ}
-            exit={trade.EXIT_OBJ}
+            legs={trade.LEGS} // full timeline
+            entryLegs={trade.ENTRY_OBJ} // only entries
+            exitLegs={trade.EXIT_OBJ} // only exits
             trade_status={trade.STATUS}
             pnl_percent={trade.PNL_PERCENT}
             trade_duration={trade.TRADE_DURATION}

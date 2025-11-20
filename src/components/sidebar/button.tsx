@@ -1,17 +1,19 @@
-import React from "react";
+//
+import { SIDE } from "@/types/orders/order.enums";
+//
 
 interface ButtonProps {
-  label: "BUY" | "SELL" | string;
-  side: string;
-  setSide: (value: string) => void;
+  label: SIDE;
+  value: SIDE;
+  onClick: () => void;
 }
 
-export default function Button({ label, side, setSide }: ButtonProps) {
+export default function Button({ label, value, onClick }: ButtonProps) {
   return (
     <button
-      onClick={() => setSide(label)}
+      onClick={onClick}
       className={`flex-1 py-2 px-3 rounded-lg font-semibold text-sm transition-all border cursor-pointer ${
-        side === label
+        value === label
           ? label === "BUY"
             ? "bg-green-600 text-white"
             : "bg-red-600 text-white"

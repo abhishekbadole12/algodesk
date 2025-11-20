@@ -4,7 +4,7 @@ import { ITrade } from "@/types/trade";
 export function formatCompletedTrades(trades: TradeBookItem[]): ITrade[] {
   const grouped: Record<string, TradeBookItem[]> = {};
 
-  // Group all trades by SEC_ID
+  // Group by SEC_ID
   for (const t of trades) {
     if (!grouped[t.SEC_ID]) grouped[t.SEC_ID] = [];
     grouped[t.SEC_ID].push(t);
@@ -12,93 +12,98 @@ export function formatCompletedTrades(trades: TradeBookItem[]): ITrade[] {
 
   const result: ITrade[] = [];
 
-  // Format ms → HH:MM:SS
-  const formatDuration = (ms: number) => {
-    if (!ms || ms <= 0) return "-";
-
-    const totalSeconds = Math.floor(ms / 1000);
-    // const hours = String(Math.floor(totalSeconds / 3600)).padStart(2, "0");
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-
-    return `${minutes} min ${seconds} sec`;
-  };
+  function parseTime(t: TradeBookItem) {
+    const [datePart, timePart] = t.ORDER_DATE_TIME.split(" ");
+    const [dd, mm, yyyy] = datePart.split("-");
+    return new Date(`${yyyy}-${mm}-${dd} ${timePart}`).getTime();
+  }
 
   for (const secId in grouped) {
     const items = grouped[secId];
 
-    // Sort by time so first = entry, second = exit
-    items.sort(
-      (a, b) =>
-        new Date(a.ORDER_DATE_TIME).getTime() -
-        new Date(b.ORDER_DATE_TIME).getTime()
-    );
+    // Sort time → real trading timeline
+    items.sort((a, b) => parseTime(a) - parseTime(b));
 
-    const entry = items[1];
-    const exit = items[0]; // undefined if not closed
+    // Direction determined by FIRST TRADE
+    const first = items[0];
+    const direction = first.BUY_SELL.toUpperCase() === "BUY" ? "LONG" : "SHORT";
 
-    const direction = entry?.BUY_SELL === "BUY" ? "LONG" : "SHORT";
+    // FIFO Stack for entries
+    let fifo: { qty: number; price: number }[] = [];
+    let closedPNL = 0;
+    let closedQty = 0;
 
-    // 🟡 ONLY ONE TRADE → OPEN POSITION
-    if (!exit) {
-      result.push({
-        SEC_ID: secId,
-        SETTLOR: entry.SETTLOR,
-        ENTRY_OBJ: entry,
-        EXIT_OBJ: null, // << return an empty object
-        PNL: 0,
-        PNL_PERCENT: 0,
-        STATUS: "OPEN",
-        DIRECTION: direction,
-        TRADE_DURATION: null,
-      });
-      continue;
+    // Track open legs
+    let openLegs: TradeBookItem[] = [];
+    let closedLegs: TradeBookItem[] = [];
+
+    for (const leg of items) {
+      const side = leg.BUY_SELL.toUpperCase();
+      const qty = leg.QUANTITY;
+      const price = leg.PRICE;
+
+      if (
+        (direction === "LONG" && side === "BUY") ||
+        (direction === "SHORT" && side === "SELL")
+      ) {
+        // ENTRY LEG
+        fifo.push({ qty, price });
+        openLegs.push(leg);
+      } else {
+        // EXIT LEG → match FIFO
+        let remaining = qty;
+        closedLegs.push(leg);
+
+        while (remaining > 0 && fifo.length > 0) {
+          let entry = fifo[0];
+          const matchedQty = Math.min(entry.qty, remaining);
+
+          // Calculate PNL piece-wise
+          if (direction === "LONG") {
+            closedPNL += (price - entry.price) * matchedQty;
+          } else {
+            closedPNL += (entry.price - price) * matchedQty;
+          }
+
+          entry.qty -= matchedQty;
+          remaining -= matchedQty;
+          closedQty += matchedQty;
+
+          if (entry.qty === 0) fifo.shift();
+        }
+      }
     }
 
-    function parseTradeDate(dateStr: string): number {
-      // dateStr = "18-11-2025 10:11:56"
-      const [datePart, timePart] = dateStr.split(" ");
-      const [dd, mm, yyyy] = datePart.split("-");
+    const openQty = fifo.reduce((s, f) => s + f.qty, 0);
 
-      // Convert → "2025-11-18 10:11:56"
-      const formatted = `${yyyy}-${mm}-${dd} ${timePart}`;
+    const STATUS = closedQty === 0 ? "OPEN" : openQty === 0 ? "CLOSED" : "PARTIAL";
 
-      return new Date(formatted).getTime();
-    }
+    const firstTime = parseTime(items[0]);
+    const lastTime = closedLegs.length
+      ? parseTime(closedLegs[closedLegs.length - 1])
+      : null;
 
-    // Time duration calculation
-    const entryTime = parseTradeDate(entry.ORDER_DATE_TIME);
-    const exitTime = exit ? parseTradeDate(exit.ORDER_DATE_TIME) : null;
-
-    const duration = exitTime ? formatDuration(exitTime - entryTime): null;
-
-    // Prices
-    const entryPrice = entry.PRICE;
-    const exitPrice = exit.PRICE;
-
-    // Qty (BOTH BUY & SELL qty same)
-    const qty = entry.QUANTITY;
-
-    // 🟢 Long OR Short completed trade
-    const pnl =
-      (exit.PRICE - entry.PRICE) * (entry.BUY_SELL === "BUY" ? qty : -qty);
-
-    //  PNL %
-    const pnlPercent =
-      entry.BUY_SELL === "BUY"
-        ? ((exitPrice - entryPrice) / entryPrice) * 100
-        : ((entryPrice - exitPrice) / entryPrice) * 100;
+    const duration =
+      lastTime === null
+        ? "-"
+        : `${Math.floor((lastTime - firstTime) / 60000)} min ${Math.floor(
+            ((lastTime - firstTime) % 60000) / 1000
+          )} sec`;
 
     result.push({
       SEC_ID: secId,
-      SETTLOR: entry.SETTLOR,
-      ENTRY_OBJ: entry,
-      EXIT_OBJ: exit,
-      PNL: pnl,
-      PNL_PERCENT: pnlPercent,
-      STATUS: "CLOSED",
+      SETTLOR: first.SETTLOR,
+      ENTRY_OBJ: openLegs,
+      EXIT_OBJ: closedLegs,
+      PNL: closedPNL,
+      PNL_PERCENT:
+        openLegs.length > 0
+          ? (closedPNL / openLegs[0].PRICE) * 100
+          : 0,
+      STATUS,
       DIRECTION: direction,
-      TRADE_DURATION: duration ?? null,
+      TRADE_DURATION: duration,
+      LEGS: items, // full timeline list
     });
   }
 

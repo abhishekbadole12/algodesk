@@ -1,7 +1,7 @@
-import { AlgorithmCode } from "@/types/enum/algorithm.enum";
+import { Algorithm } from "@/types/enum/algorithm.enum";
 
 export interface AlgorithmPreset {
-  code: AlgorithmCode;
+  value: Algorithm;
   label: string;
   target: number;
   stoploss: number;
@@ -10,42 +10,42 @@ export interface AlgorithmPreset {
 
 export const ALGORITHM_PRESETS: AlgorithmPreset[] = [
   {
-    code: AlgorithmCode.TARGET_1_STOPLOSS_1,
+    value: Algorithm.TARGET_1_STOPLOSS_1,
     label: "Target ₹1 / SL ₹1",
     target: 1,
     stoploss: 1,
     active: true,
   },
   {
-    code: AlgorithmCode.TARGET_2_STOPLOSS_1,
+    value: Algorithm.TARGET_2_STOPLOSS_1,
     label: "Target ₹2 / SL ₹1",
     target: 2,
     stoploss: 1,
     active: true,
   },
   {
-    code: AlgorithmCode.TARGET_3_STOPLOSS_1_5,
+    value: Algorithm.TARGET_3_STOPLOSS_1_5,
     label: "Target ₹3 / SL ₹1.5",
     target: 3,
     stoploss: 1.5,
     active: true,
   },
   {
-    code: AlgorithmCode.SCALP_MODE,
+    value: Algorithm.SCALP_MODE,
     label: "Target ₹0.5 / SL ₹0.25",
     target: 0.5,
     stoploss: 0.25,
     active: true,
   },
   {
-    code: AlgorithmCode.CUSTOM,
+    value: Algorithm.CUSTOM,
     label: "Manually set target & SL",
     target: 0,
     stoploss: 0,
     active: true,
   },
   {
-    code: AlgorithmCode.SWING_MODE,
+    value: Algorithm.SWING_MODE,
     label: "Target ₹5 / SL ₹2",
     target: 5,
     stoploss: 2,

@@ -1,16 +1,34 @@
-import React from "react";
+//
 import Button from "../../button";
+//
+import { SIDE } from "@/types/orders/order.enums";
+//
 
-export default function SideSelector({form}) {
-  const {side, setSide}=form
+const options = [
+  {
+    id: 1,
+    value: SIDE.BUY,
+  },
+  { id: 2, value: SIDE.SELL },
+];
+
+export default function SideSelector({ form }: any) {
+  const { trade, updateTrade } = form;
+
   return (
     <div className="space-y-2">
       <label className="block text-sm font-semibold text-foreground">
         Side
       </label>
+
       <div className="flex gap-3">
-        {["BUY", "SELL"].map((option, index) => (
-          <Button key={index} label={option} side={side} setSide={setSide} />
+        {options.map((option) => (
+          <Button
+            key={option.id}
+            label={option.value}
+            value={trade.side}
+            onClick={() => updateTrade("side", option.value)}
+          />
         ))}
       </div>
     </div>
