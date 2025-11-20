@@ -5,10 +5,17 @@ import FormSelect from "../../common/form/form-select";
 import ScriptSelector from "./sections/script-selector";
 import SideSelector from "./sections/side-selector";
 //
+import {
+  ORDER_TYPE_OPTIONS,
+  VARIETY_OPTIONS,
+} from "@/types/orders/order.types";
+//
 import { ALGORITHM_PRESETS } from "@/constant/algorithm";
 //
-import { ORDER_TYPE_OPTIONS } from "@/types/config/order-type";
+
+// enums
 import { Algorithm } from "@/types/enum/algorithm.enum";
+import { ORDER_TYPE, VARIETY } from "@/types/orders/order.enums";
 //
 
 export default function SidebarBody({ form }: any) {
@@ -30,33 +37,21 @@ export default function SidebarBody({ form }: any) {
       {/* BUY / SELL */}
       <SideSelector form={form} />
 
-      {/* Quantity */}
-      <FormInput
-        label="Quantity"
-        name="quantity"
-        type="number"
-        value={trade.quantity}
-        onChange={(e) => updateTrade("quantity", e.target.value)}
-        placeholder="e.g. 50"
+      <FormSelect
+        label="Variety"
+        name="variety"
+        value={algo.code}
+        onChange={(e) => updateAlgo("variety", e.target.value as VARIETY)}
+        options={VARIETY_OPTIONS}
       />
 
       {/* Order Type */}
       <FormSelect
         label="Order Type"
-        // name=""
+        name="ordertype"
         value={trade.ordertype}
-        onChange={(e) => updateTrade("ordertype", e.target.value)}
+        onChange={(e) => updateTrade("ordertype", e.target.value as ORDER_TYPE)}
         options={ORDER_TYPE_OPTIONS}
-      />
-
-      {/* Price */}
-      <FormInput
-        label="Price"
-        name="price"
-        type="number"
-        value={trade.price}
-        onChange={(e) => updateTrade("price", e.target.value)}
-        placeholder="e.g. 225.50"
       />
 
       {/* Algorithm */}
@@ -68,8 +63,30 @@ export default function SidebarBody({ form }: any) {
         options={ALGORITHM_PRESETS}
       />
 
-      {/* Target & Stop Loss */}
       <div className="grid grid-cols-2 gap-3">
+        {/* Price */}
+        <FormInput
+          label="Price"
+          name="price"
+          type="number"
+          value={trade.price}
+          onChange={(e) => updateTrade("price", e.target.value)}
+          placeholder="e.g. 225.50"
+        />
+
+        {/* Quantity */}
+        <FormInput
+          label="Quantity"
+          name="quantity"
+          type="number"
+          value={trade.quantity}
+          onChange={(e) => updateTrade("quantity", e.target.value)}
+          placeholder="e.g. 50"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {/* Target  */}
         <FormInput
           label="Target"
           type="number"
@@ -79,6 +96,7 @@ export default function SidebarBody({ form }: any) {
           placeholder="e.g. 230"
         />
 
+        {/* Stop Loss */}
         <FormInput
           label="Stop Loss"
           type="number"

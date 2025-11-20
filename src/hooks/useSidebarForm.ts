@@ -3,7 +3,7 @@
 import { useState } from "react";
 //
 import { Algorithm } from "@/types/enum/algorithm.enum";
-import { ORDER_TYPE, SIDE } from "@/types/orders/order.enums";
+import { ORDER_TYPE, SIDE, VARIETY } from "@/types/orders/order.enums";
 //
 
 export function useSidebarForm() {
@@ -23,6 +23,7 @@ export function useSidebarForm() {
    * -----------------------------
    */
   const [trade, setTrade] = useState({
+    variety: VARIETY.NORMAL,
     side: SIDE.BUY,
     quantity: "",
     ordertype: ORDER_TYPE.LIMIT,

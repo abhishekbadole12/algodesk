@@ -141,11 +141,11 @@ export default function TableRow({
                       "-"
                     ) : (
                       <>
-                        <p>₹{pnl.toFixed(2)}</p>
-                        <p className="text-xs">
+                        <p>₹ {pnl.toFixed(2)}</p>
+                        {/* <p className="text-xs">
                           {isProfitable ? "+" : ""}
                           {pnl_percent.toFixed(2)}%
-                        </p>
+                        </p> */}
                       </>
                     )}
                   </div>
