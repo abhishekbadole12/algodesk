@@ -1,5 +1,5 @@
 //
-import { SIDE } from "@/types/orders/order.enums";
+import { SIDE } from "@/types/order/order.enums";
 //
 
 interface ButtonProps {

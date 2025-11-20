@@ -1,4 +1,4 @@
-import { TradeBookItem } from "@/types/orders/tradebook.types";
+import { TradeBookItem } from "@/types/order/tradebook.types";
 import { ITrade } from "@/types/trade";
 
 export function formatCompletedTrades(trades: TradeBookItem[]): ITrade[] {

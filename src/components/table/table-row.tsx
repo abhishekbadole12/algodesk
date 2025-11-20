@@ -1,7 +1,7 @@
 //
 import { AlertCircle, CheckCircle, ChevronDown } from "lucide-react";
 //
-import { TradeBookItem } from "@/types/orders/tradebook.types";
+import { TradeBookItem } from "@/types/order/tradebook.types";
 
 interface TradeRowProps {
   direction: "SHORT" | "LONG";
@@ -225,7 +225,7 @@ export default function TableRow({
               </p>
 
               <div className="space-y-2 px-6">
-                {legs.map((leg) => {
+                {legs.map((leg, i) => {
                   const type =
                     leg.BUY_SELL.toUpperCase() ===
                     (direction === "LONG" ? "BUY" : "SELL")
@@ -234,6 +234,7 @@ export default function TableRow({
 
                   return (
                     <TradeLegCard
+                      key={i}
                       leg={leg}
                       type={type}
                       trade_status={trade_status}

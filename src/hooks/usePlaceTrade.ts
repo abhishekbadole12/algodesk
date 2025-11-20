@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 //
-import { IOrderPayload } from "@/types/orders/order.types";
+import { IOrderPayload } from "@/types/order/order.types";
 
 export function usePlaceOrder() {
   const [loading, setLoading] = useState(false);

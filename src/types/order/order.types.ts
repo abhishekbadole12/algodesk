@@ -28,59 +28,56 @@ export interface IOrderPayload {
   ordertag?: string;
 }
 
+interface IOptions {
+  label: string;
+  value: VARIETY | ORDER_TYPE;
+  status: boolean;
+}
+
 // Variety Options
-export const VARIETY_OPTIONS: { label: string; value: VARIETY }[] = [
+export const VARIETY_OPTIONS: IOptions[] = [
   {
     label: "Normal",
     value: VARIETY.NORMAL,
+    status: true,
   },
   {
     label: "After Market Order (AMO)",
     value: VARIETY.AMO,
+    status: true,
   },
   {
     label: "Robo",
     value: VARIETY.ROBO,
+    status: true,
   },
   {
     label: "Stop Loss",
     value: VARIETY.STOPLOSS,
+    status: true,
   },
 ];
 
 // Order Type Options
-export const ORDER_TYPE_OPTIONS: { label: string; value: ORDER_TYPE }[] = [
+export const ORDER_TYPE_OPTIONS: IOptions[] = [
   {
     label: "Limit",
     value: ORDER_TYPE.LIMIT,
+    status: true,
   },
   {
     label: "Market",
     value: ORDER_TYPE.MARKET,
+    status: true,
   },
   {
     label: "Stop Loss",
     value: ORDER_TYPE.STOP_LOSS,
+    status: true,
   },
   {
     label: "Stop Loss Market",
     value: ORDER_TYPE.STOP_LOSS_MARKET,
+    status: true,
   },
 ];
-
-export const PRODUCT_TYPE_OPTIONS = Object.values(PRODUCT_TYPE).map(
-  (value) => ({
-    label: value,
-    value: value,
-  })
-);
-
-export const EXCHANGE_OPTIONS = Object.values(EXCHANGE).map((value) => ({
-  label: value,
-  value: value,
-}));
-
-export const SIDE_OPTIONS = Object.values(SIDE).map((value) => ({
-  label: value,
-  value: value,
-}));

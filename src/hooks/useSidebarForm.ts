@@ -3,7 +3,7 @@
 import { useState } from "react";
 //
 import { Algorithm } from "@/types/enum/algorithm.enum";
-import { ORDER_TYPE, SIDE, VARIETY } from "@/types/orders/order.enums";
+import { ORDER_TYPE, SIDE, VARIETY } from "@/types/order/order.enums";
 //
 
 export function useSidebarForm() {

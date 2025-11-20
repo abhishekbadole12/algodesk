@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session/session";
-import { TradeBookResponse } from "@/types/orders/tradebook.types";
+import { TradeBookResponse } from "@/types/order/tradebook.types";
 
 export async function GET() {
   try {

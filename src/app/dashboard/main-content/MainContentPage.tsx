@@ -17,21 +17,20 @@ import CompletedTradesTable from "@/components/trades/CompletedTrades/CompletedT
 import PendingOrdersTable from "@/components/trades/PendingOrders/PendingOrderCard";
 import WatchlistCard from "@/components/watchlist/WatchlistCard";
 import DetailPanel from "@/components/watchlist/DetailPanel";
+import ActiveTrade from "@/components/trades/ActiveTrades/active-trade";
 //
 import { watchlistItems } from "@/data/dummy/watchlist.mock";
 import { completedTrades } from "@/data/dummy/completedTrades.mock";
 import { pendingOrders } from "@/data/dummy/pendingOrders.mock";
 //
-import { Tabs } from "@/types/enum/tabs.enum";
-import { TAB_META } from "@/types/enum/tabs.meta";
-//
-//
 
-import ActiveTrade from "@/components/trades/ActiveTrades/active-trade";
+//
+import { TAB_META } from "@/types/tab/tab.types";
+import { Tabs } from "@/types/tab/tab.enums";
 //
 
 interface IMainContent {
-  activeTab: Tabs | string;
+  activeTab: Tabs;
 }
 
 export default function MainContent({ activeTab }: IMainContent) {
@@ -61,8 +60,8 @@ export default function MainContent({ activeTab }: IMainContent) {
       {/* ---------------- TAB NAVIGATION ---------------- */}
       <div className="flex gap-2 border-b border-border pb-4">
         {Object.values(Tabs).map((tab) => {
-          const meta = TAB_META[tab];
-          const Icon = meta.icon;
+          const meta = TAB_META[tab]; 
+          const Icon = meta.Icon;
 
           return (
             <TabButton

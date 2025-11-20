@@ -1,0 +1,6 @@
+export enum Tabs {
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+  PENDING = "PENDING",
+  WATCHLIST = "WATCHLIST",
+}

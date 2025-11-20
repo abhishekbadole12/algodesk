@@ -11,6 +11,8 @@ export default function TabButton({
   isActive,
   onClick,
 }: TabButtonProps) {
+  console.log();
+  
   return (
     <button
       onClick={onClick}

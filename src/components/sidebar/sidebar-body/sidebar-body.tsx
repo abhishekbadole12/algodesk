@@ -8,14 +8,14 @@ import SideSelector from "./sections/side-selector";
 import {
   ORDER_TYPE_OPTIONS,
   VARIETY_OPTIONS,
-} from "@/types/orders/order.types";
+} from "@/types/order/order.types";
 //
 import { ALGORITHM_PRESETS } from "@/constant/algorithm";
 //
 
 // enums
 import { Algorithm } from "@/types/enum/algorithm.enum";
-import { ORDER_TYPE, VARIETY } from "@/types/orders/order.enums";
+import { ORDER_TYPE, VARIETY } from "@/types/order/order.enums";
 //
 
 export default function SidebarBody({ form }: any) {

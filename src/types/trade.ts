@@ -1,4 +1,4 @@
-import { TradeBookItem } from "./orders/tradebook.types";
+import { TradeBookItem } from "./order/tradebook.types";
 
 export interface TradeLeg {
   id: string;

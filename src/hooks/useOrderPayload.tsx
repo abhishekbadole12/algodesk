@@ -1,8 +1,8 @@
 //
 import { useEffect, useState } from "react";
 //
-import { PRODUCT_TYPE, VARIETY } from "@/types/orders/order.enums";
-import { IOrderPayload } from "@/types/orders/order.types";
+import { PRODUCT_TYPE, VARIETY } from "@/types/order/order.enums";
+import { IOrderPayload } from "@/types/order/order.types";
 //
 
 export function useOrderPayload(form: any) {
