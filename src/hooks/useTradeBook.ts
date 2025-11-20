@@ -1,8 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { TradeBookItem } from "@/types/orders/tradebook.types";
+//
+import { useAuth } from "@/context/AuthContext";
+//
 import { formatCompletedTrades } from "@/utils/formatCompletedTrades";
 
 export function useTradeBook() {
+  const { isAuthenticated } = useAuth();
+
   const [trades, setTrades] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +37,11 @@ export function useTradeBook() {
   }, []);
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
     fetchTrades();
   }, [fetchTrades]);
 

@@ -1,13 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
+//
+import { useAuth } from "@/context/AuthContext";
 
 export function useFunds() {
+  const { isAuthenticated } = useAuth();
+
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      setData([]);
+      setIsLoading(false);
+      return;
+    }
+
     async function loadFunds() {
       try {
         const res = await fetch("/api/funds");

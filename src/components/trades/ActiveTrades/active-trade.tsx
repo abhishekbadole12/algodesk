@@ -20,7 +20,6 @@ export default function ActiveTrade() {
   const handleToggleExpand = (id: string) => {
     setExpanded((prev) => ({ ...prev, [id]: !prev[id] }));
   };
-  console.log(trades);
 
   return (
     <>

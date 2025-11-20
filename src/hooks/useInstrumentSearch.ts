@@ -1,15 +1,26 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-
+//
+import { useAuth } from "@/context/AuthContext";
+//
 
 export function useInstrumentSearch(query: string) {
+  const workerRef = useRef<Worker | null>(null);
+
+  const { isAuthenticated } = useAuth();
+
   const [results, setResults] = useState<any[]>([]);
   const [data, setData] = useState<any[]>([]);
-  const workerRef = useRef<Worker | null>(null);
 
   // Load CSV data once
   useEffect(() => {
+    if (!isAuthenticated) {
+      setResults([]);
+      // setLoading(false);
+      return;
+    }
+
     fetch("/api/instruments")
       .then((res) => res.json())
       .then((json) => setData(json));
@@ -33,6 +44,7 @@ export function useInstrumentSearch(query: string) {
 
   // Debounce query
   const [debounced, setDebounced] = useState(query);
+
   useEffect(() => {
     const t = setTimeout(() => setDebounced(query), 300);
     return () => clearTimeout(t);
